@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: oom-example
+spec:
+  containers: 
+  - name: oom-container
+    image: ishaansehgal99/stress-test
+    resources: 
+      limits: 
+        memory: "50Mi"
