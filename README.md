@@ -35,29 +35,46 @@ In general this behavior highlights Kubernetes reslience in attempting to keep w
 
 # Additional Exercise: Cgroup Limit Exploration 
 Logged into host using:
+```
 minikube ssh
+```
 
 Viewed running containers using:
+```
 crictl ps
+```
 
 Found relevant container id:
+```
 CONTAINER	      NAME
 c1d3b72cef072   oom-container
+```
 
 Inspected container: 
+```
 docker inspect c1d3b72cef072
-This returned an entry: 
+```
+
+This returned an entry:
+```
  "CgroupParent": "/kubepods/burstable/pod6d5a0521-a5ad-4e7d-b233-d05c2ee50ae8"
+```
 
 Using this path we can insert it into the following 
+```
 cat /sys/fs/cgroup/memory/<cgroup_path>/memory.limit_in_bytes
+```
 
 This path represents the overall memory limit for all the containers in the pod. This limit ensures that the combined memory usage of all containers in the pod does not exceed the defined limit. 
+```
 cat /sys/fs/cgroup/memory/kubepods/burstable/pod6d5a0521-a5ad-4e7d-b233-d05c2ee50ae8/memory.limit_in_bytes
+```
 Which returns the correct bytes: 52428800
 
 We can also go one folder deeper into the container of the pod like so:
+```
 cat /sys/fs/cgroup/memory/kubepods/burstable/pod6d5a0521-a5ad-4e7d-b233-d05c2ee50ae8/c1d3b72cef072add8f4e352a93ea8e0e1283e0b93b14c73531ed33f1bd4e0931/memory.limit_in_bytes
+```
 Which returns the correct bytes as well: 52428800 
 This represents the memory limit specifically for this container on the pod. Ensuring memory usage of this specific container does not exceed the defined limit. 
 
